@@ -203,6 +203,28 @@ Additionally, CPU usage is measured using a background polling monitor normalize
 
 **P95 and P99 latency** are more important than mean latency for production SLA assessment because they capture worst-case performance under realistic conditions.
 
+
+## Raw Inference Benchmark Output
+
+The following screenshots show the raw output generated from the LightGBM inference benchmark script.
+
+### Model Size and Memory Footprint
+![Model Size and Memory Footprint](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_model_size_memory.png)
+
+### Inference Latency
+![Inference Latency](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_latency.png)
+
+### Batch Throughput
+![Batch Throughput](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_batch_throughput.png)
+
+### Stress Test CPU and Memory
+![Stress Test CPU and Memory](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_stress_cpu_memory.png)
+
+### Edge AI Suitability Assessment
+![Edge AI Suitability Assessment](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_edge_ai_suitability.png)
+
+
+
 ### Benchmark Files
 
 ```text
