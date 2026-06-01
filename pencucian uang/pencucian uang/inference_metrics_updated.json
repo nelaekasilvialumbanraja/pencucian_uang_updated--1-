@@ -1,0 +1,43 @@
+{
+  "project": "AML Fraud Detection — LightGBM Inference Benchmark",
+  "system_info": {
+    "platform": "Windows",
+    "cpu_logical_cores": 8,
+    "cpu_physical_cores": 6,
+    "ram_total_gb": 7.71,
+    "python_version": "3.12.9"
+  },
+  "model_size_mb": 1.015,
+  "memory_footprint_mb": 2.85,
+  "latency": {
+    "n_samples": 1000,
+    "mean_ms": 1.2647,
+    "median_ms": 1.164,
+    "p95_ms": 1.7895,
+    "p99_ms": 2.271,
+    "min_ms": 0.9042,
+    "max_ms": 2.8022,
+    "std_ms": 0.2553
+  },
+  "throughput_batch": {
+    "n_samples": 5000,
+    "elapsed_s": 0.029573,
+    "tps": 169072.0,
+    "fraud_detected": 4221,
+    "fraud_rate_pct": 84.42
+  },
+  "stress_cpu_memory": {
+    "total_predictions": 1240000,
+    "elapsed_s": 5.005,
+    "tps": 247767.19,
+    "avg_cpu_per_core_pct": 72.9,
+    "avg_cpu_total_pct": 583.18,
+    "n_logical_cores": 8,
+    "baseline_rss_mb": 208.23,
+    "peak_rss_mb": 212.93,
+    "inference_mem_delta_mb": 4.7,
+    "n_valid_cpu_samples": 48,
+    "n_total_cpu_samples": 48
+  },
+  "edge_suitability": true
+}
