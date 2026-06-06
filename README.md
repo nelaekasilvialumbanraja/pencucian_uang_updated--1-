@@ -175,11 +175,6 @@ All metrics are evaluated on the held-out test set using the threshold tuned on 
 ![Feature Importance](pencucian%20uang/pencucian%20uang/feature_importance_best_model.png)
 
 ---
-### SHAP Dependence Plot — Receiver Frequency
-![SHAP Dependence Receiver Frequency](pencucian%20uang/pencucian%20uang/shap_dependence_Receiver_freq.png)
-
-### SHAP Feature Importance per Class with Labels
-![SHAP Feature Importance Class Label](pencucian%20uang/pencucian%20uang/shap_feature_importance_stacked_class_label.png)
 
 ## Threshold Sweep — All Models
 
@@ -232,11 +227,11 @@ Key features identified as most influential by SHAP: transaction amount, sender 
 ### SHAP Summary Plot
 ![SHAP Summary Plot](pencucian%20uang/pencucian%20uang/shap_summary_plot.png)
 
-### SHAP Feature Importance
-![SHAP Bar Plot](pencucian%20uang/pencucian%20uang/shap_bar_plot.png)
+### SHAP Dependence Plot — Receiver Frequency
+![SHAP Dependence Receiver Frequency](pencucian%20uang/pencucian%20uang/shap_dependence_Receiver_freq.png)
 
-### SHAP Dependence Plot
-![SHAP Dependence Plot](pencucian%20uang/pencucian%20uang/shap_dependence_plot.png)
+### SHAP Feature Importance per Class with Labels
+![SHAP Feature Importance Class Label](pencucian%20uang/pencucian%20uang/shap_feature_importance_stacked_class_label.png)
 
 ### SHAP Waterfall — Suspicious Transaction
 ![SHAP Waterfall Suspicious](pencucian%20uang/pencucian%20uang/shap_waterfall_suspicious.png)
