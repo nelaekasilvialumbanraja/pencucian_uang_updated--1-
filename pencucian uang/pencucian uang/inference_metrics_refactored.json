@@ -8,34 +8,34 @@
     "python_version": "3.12.9"
   },
   "model_size_mb": 0.696,
-  "memory_footprint_mb": 1.59,
+  "memory_footprint_mb": 1.8,
   "latency": {
     "n_samples": 1000,
-    "mean_ms": 0.7378,
-    "median_ms": 0.6649,
-    "p95_ms": 1.1882,
-    "p99_ms": 1.538,
-    "min_ms": 0.6295,
-    "max_ms": 2.0177,
-    "std_ms": 0.1911
+    "mean_ms": 0.7996,
+    "median_ms": 0.7002,
+    "p95_ms": 1.2042,
+    "p99_ms": 2.0641,
+    "min_ms": 0.6408,
+    "max_ms": 4.3185,
+    "std_ms": 0.2771
   },
   "throughput_batch": {
     "n_samples": 5000,
-    "elapsed_s": 0.023663,
-    "tps": 211297.66,
+    "elapsed_s": 0.027017,
+    "tps": 185065.92,
     "fraud_detected": 6,
     "fraud_rate_pct": 0.12
   },
   "stress_cpu_memory": {
-    "total_predictions": 1065000,
-    "elapsed_s": 5.008,
-    "tps": 212665.75,
-    "avg_cpu_per_core_pct": 24.64,
-    "avg_cpu_total_pct": 197.08,
+    "total_predictions": 880000,
+    "elapsed_s": 5.013,
+    "tps": 175535.28,
+    "avg_cpu_per_core_pct": 23.87,
+    "avg_cpu_total_pct": 190.96,
     "n_logical_cores": 8,
-    "baseline_rss_mb": 1682.49,
-    "peak_rss_mb": 1682.67,
-    "inference_mem_delta_mb": 0.18
+    "baseline_rss_mb": 404.14,
+    "peak_rss_mb": 404.38,
+    "inference_mem_delta_mb": 0.24
   },
   "edge_suitability": true
 }
