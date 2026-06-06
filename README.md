@@ -86,7 +86,6 @@ The dataset is split into three non-overlapping subsets with stratification on t
 - A dedicated validation set (15%) is required to tune the classification threshold independently from the test set. Without a validation set, threshold optimization on the test set would constitute an evaluation leak — the test performance would reflect a threshold chosen to perform well on that specific subset rather than on unseen data.
 - The test set (15%) is held out entirely and used only once, at the end, to report final metrics. It is never used to make any modeling decision.
 
-An 80/20 two-way split was considered but rejected because it provides no clean separation between threshold tuning and final evaluation.
 
 **Step 5 — Post-split account behavioral feature engineering (train set only)**
 Account-level behavioral features are computed after the split to prevent temporal and distributional leakage:
