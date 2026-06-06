@@ -1,0 +1,41 @@
+{
+  "project": "AML Fraud Detection — Refactored Pipeline Inference Benchmark",
+  "system_info": {
+    "platform": "Windows",
+    "cpu_logical_cores": 8,
+    "cpu_physical_cores": 6,
+    "ram_total_gb": 7.71,
+    "python_version": "3.12.9"
+  },
+  "model_size_mb": 0.696,
+  "memory_footprint_mb": 1.59,
+  "latency": {
+    "n_samples": 1000,
+    "mean_ms": 0.7378,
+    "median_ms": 0.6649,
+    "p95_ms": 1.1882,
+    "p99_ms": 1.538,
+    "min_ms": 0.6295,
+    "max_ms": 2.0177,
+    "std_ms": 0.1911
+  },
+  "throughput_batch": {
+    "n_samples": 5000,
+    "elapsed_s": 0.023663,
+    "tps": 211297.66,
+    "fraud_detected": 6,
+    "fraud_rate_pct": 0.12
+  },
+  "stress_cpu_memory": {
+    "total_predictions": 1065000,
+    "elapsed_s": 5.008,
+    "tps": 212665.75,
+    "avg_cpu_per_core_pct": 24.64,
+    "avg_cpu_total_pct": 197.08,
+    "n_logical_cores": 8,
+    "baseline_rss_mb": 1682.49,
+    "peak_rss_mb": 1682.67,
+    "inference_mem_delta_mb": 0.18
+  },
+  "edge_suitability": true
+}
