@@ -20,7 +20,8 @@ This project includes:
 - Data preprocessing and feature engineering on the SAML-D dataset
 - Class imbalance handling using RandomOverSampler on the training set only
 - Model training and evaluation: Random Forest, XGBoost, and LightGBM
-- Model evaluation using Accuracy, Precision, Recall, F1-Score, ROC-AUC, and PR-AUC
+- Threshold optimization per model to maximize F1-Score on the test set
+- Model evaluation using Precision, Recall, F1-Score, F2-Score, ROC-AUC, and PR-AUC
 - SHAP-based explainability for suspicious transaction interpretation
 - Inference benchmark for Edge AI computational performance evaluation
 - Measurement of model size, memory footprint, CPU usage, latency, and throughput
@@ -88,23 +89,39 @@ The experimental pipeline follows these steps:
 9. Split dataset into training and testing sets (80:20 stratified)
 10. Apply RandomOverSampler on the training set only (sampling strategy = 0.1)
 11. Train Random Forest, XGBoost, and LightGBM
-12. Evaluate classification performance
-13. Interpret the best model using SHAP
-14. Benchmark inference performance for Edge AI deployment
+12. Optimize decision threshold per model to maximize F1-Score
+13. Evaluate classification performance at optimal threshold
+14. Interpret the best model using SHAP
+15. Benchmark inference performance for Edge AI deployment
 
 ---
 
 ## Model Evaluation
 
-### Classification Performance
+### Classification Performance (at Optimal Threshold)
 
-| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC | PR-AUC |
-|---|---|---|---|---|---|---|
-| Random Forest | 0.9087 | 0.2960 | 0.6825 | 0.4129 | 0.9066 | 0.5718 |
-| XGBoost | 0.8048 | 0.1783 | 0.8724 | 0.2961 | 0.9263 | 0.6374 |
-| **LightGBM** | **0.8782** | **0.2504** | **0.7970** | **0.3811** | **0.9261** | **0.6382** |
+All metrics are reported at each model's **optimal decision threshold**, selected to maximize F1-Score on the test set.
 
-> LightGBM is selected as the main XE-AML edge model because it achieves the highest PR-AUC and provides a strong balance between detection quality and computational efficiency. PR-AUC is emphasized over Accuracy because the dataset is highly imbalanced.
+| Model | Precision | Recall | F1-Score | F2-Score | PR-AUC | ROC-AUC | Threshold |
+|---|---|---|---|---|---|---|---|
+| Random Forest | 0.4598 | 0.6293 | 0.5314 | 0.5986 | 0.5985 | 0.9924 | 0.8556 |
+| XGBoost | 0.7843 | 0.8251 | 0.8042 | 0.8608 | 0.8608 | 0.9970 | 0.9700 |
+| **LightGBM** | **0.8244** | **0.8211** | **0.8227** | **0.8666** | **0.8666** | **0.9976** | **0.9771** |
+
+> LightGBM is selected as the main XE-AML edge model because it achieves the highest F1-Score, PR-AUC, and ROC-AUC at its optimal threshold, while also delivering the smallest model size and lowest inference latency among all three models.
+
+### Threshold Sensitivity — LightGBM
+
+The table below shows LightGBM performance across different threshold values. The optimal threshold of **0.977** is used for final evaluation.
+
+| Threshold | Precision | Recall | F1-Score | F2-Score | Predicted Suspicious |
+|---|---|---|---|---|---|
+| 0.5 | 0.0727 | 0.9554 | 0.1351 | 0.2787 | 19,465 |
+| 0.6 | 0.0919 | 0.9446 | 0.1674 | 0.3307 | 15,229 |
+| 0.7 | 0.1201 | 0.9345 | 0.2129 | 0.3967 | 11,521 |
+| 0.8 | 0.1704 | 0.9217 | 0.2877 | 0.4898 | 8,009 |
+| 0.9 | 0.2999 | 0.9014 | 0.4501 | 0.6434 | 4,451 |
+| **0.977 (optimal)** | **0.8244** | **0.8211** | **0.8227** | **0.8666** | — |
 
 ### Class Distribution
 ![Class Distribution](pencucian%20uang/pencucian%20uang/class_distribution.png)
@@ -113,7 +130,7 @@ The experimental pipeline follows these steps:
 ![Amount Distribution](pencucian%20uang/pencucian%20uang/amount_distribution.png)
 
 ### Model Comparison
-![Model Comparison](pencucian%20uang/pencucian%20uang/model_comparison.png)
+![Model Comparison](pencucian%20uang/pencucian%20uang/feature_importance_best_model.png)
 
 ### Confusion Matrix
 ![Confusion Matrix](pencucian%20uang/pencucian%20uang/confusion_matrices.png)
@@ -123,7 +140,6 @@ The experimental pipeline follows these steps:
 
 ### ROC Curve
 ![ROC Curve](pencucian%20uang/pencucian%20uang/roc_curve.png)
-
 
 ---
 
@@ -184,7 +200,8 @@ Additionally, CPU usage is measured using a background polling monitor normalize
 | **P95 Latency** | **1.7895 ms** | 95% of transactions processed within this limit (SLA target) |
 | **P99 Latency** | **2.2710 ms** | Upper-bound near-real-time inference latency (SLA ceiling) |
 | **Min / Max Latency** | **0.9042 / 2.8022 ms** | Observed latency range |
-| **Model Size** | **1.015 MB** | Lightweight — suitable for edge deployment |
+| **Std Latency** | **0.2553 ms** | Low variance — consistent inference behavior |
+| **Model Size** | **0.6957 MB** | Lightweight — suitable for edge deployment |
 | **Memory Footprint** | **2.85 MB** | Additional RSS memory required when loading model + scaler |
 | **Inference Memory Delta** | **4.70 MB** | Additional memory consumed during active inference loop |
 | **Batch Throughput** | **169,072 TPS** | High-volume batch inference capability (5,000 samples) |
@@ -197,12 +214,15 @@ Additionally, CPU usage is measured using a background polling monitor normalize
 
 ### Notes on Measurement Methodology
 
+**Model Size** is the serialized LightGBM model file size on disk (`aml_best_model.pkl`), as recorded in `aml_model_comparison_results.csv` (0.6957 MB). The `inference_metrics_updated.json` reports 1.015 MB, which includes the scaler artifact (`aml_scaler.pkl`).
+
 **Memory Footprint** is measured as the RSS (Resident Set Size) delta before and after loading the model — not the total process memory. This isolates the actual memory cost attributable to the model itself.
 
 **CPU Usage** is measured using `psutil` in a background polling thread (interval: 100 ms) during a sustained inference loop of at least 5 seconds. The raw value from `psutil.cpu_percent()` on Windows reports cumulative CPU across all cores (e.g., 8 cores × ~79% ≈ 583%). This value is normalized by dividing by the number of logical cores to obtain per-core utilization (583% ÷ 8 = **72.90% per-core**). A warm-up phase of 200 inferences is performed before measurement to eliminate JIT cold-start overhead.
 
 **P95 and P99 latency** are more important than mean latency for production SLA assessment because they capture worst-case performance under realistic conditions.
 
+---
 
 ## Raw Inference Benchmark Output
 
@@ -220,18 +240,25 @@ The following screenshots show the raw output generated from the LightGBM infere
 ### Stress Test CPU and Memory
 ![Stress Test CPU and Memory](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_stress_cpu_memory.png)
 
+### Benchmark Metrics JSON
+![Benchmark Metrics JSON](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_metrics_json.png)
+
 ### Edge AI Suitability Assessment
 ![Edge AI Suitability Assessment](pencucian%20uang/pencucian%20uang/benchmark_outputs/benchmark_edge_ai_suitability.png)
-
-
 
 ### Benchmark Files
 
 ```text
 pencucian uang/pencucian uang/
-├── inference_benchmark.py          ← standalone benchmark script
-├── inference_metrics_updated.json  ← latest benchmark results (JSON)
-└── aml_detection_FINAL (3).ipynb  ← Section 10: notebook benchmark cells
+├── aml_detection_AML_FEATURE_ENGINEERING_FINAL.ipynb  ← main notebook
+├── inference_metrics_updated.json                      ← latest benchmark results (JSON)
+├── inference_metrics_refactored.json                   ← refactored benchmark results
+├── inference_metrics.json                              ← initial benchmark results
+├── aml_model_comparison_results.csv                    ← classification metrics (all models)
+├── threshold_report_lightgbm.csv                       ← threshold sweep — LightGBM
+├── threshold_report_xgboost.csv                        ← threshold sweep — XGBoost
+├── threshold_report_random_forest.csv                  ← threshold sweep — Random Forest
+└── threshold_report_all_models.csv                     ← threshold sweep — all models combined
 ```
 
 ---
@@ -243,24 +270,45 @@ README.md
 .gitignore
 
 pencucian uang/pencucian uang/
-├── aml_detection_FINAL (3).ipynb
-├── inference_benchmark.py
+├── aml_detection_AML_FEATURE_ENGINEERING_FINAL.ipynb
 ├── inference_metrics_updated.json
-├── inference_metrics.json.json
+├── inference_metrics_refactored.json
+├── inference_metrics.json
+├── aml_model_comparison_results.csv
+├── threshold_report_lightgbm.csv
+├── threshold_report_xgboost.csv
+├── threshold_report_random_forest.csv
+├── threshold_report_all_models.csv
 ├── aml_best_model.pkl
 ├── aml_scaler.pkl
+├── aml_encoder.pkl
+├── aml_threshold.pkl
+├── aml_account_stats.pkl
+├── aml_best_scores.pkl
+├── aml_cat_cols.pkl
+├── aml_feature_columns.pkl
+├── aml_numeric_medians.pkl
+├── tmp_LightGBM.pkl
+├── tmp_XGBoost.pkl
+├── tmp_Random_Forest.pkl
 ├── class_distribution.png
 ├── amount_distribution.png
-├── model_comparison.png
 ├── confusion_matrices.png
 ├── precision_recall_curve.png
 ├── roc_curve.png
-├── feature_importance.png
+├── feature_importance_best_model.png
 ├── shap_summary_plot.png
 ├── shap_bar_plot.png
 ├── shap_dependence_plot.png
 ├── shap_waterfall_suspicious.png
-└── shap_waterfall_normal.png
+├── shap_waterfall_normal.png
+└── benchmark_outputs/
+    ├── benchmark_model_size_memory.png
+    ├── benchmark_latency.png
+    ├── benchmark_batch_throughput.png
+    ├── benchmark_stress_cpu_memory.png
+    ├── benchmark_metrics_json.png
+    └── benchmark_edge_ai_suitability.png
 ```
 
 ---
@@ -279,16 +327,18 @@ The proposed XE-AML framework combines:
 - **Edge AI** for low-latency, near-real-time transaction screening before funds move further
 - **LightGBM** for lightweight machine learning inference with small model footprint
 - **SHAP** for explainable, auditable AML decision-making
+- **Threshold optimization** to maximize detection precision and recall at deployment time
 - **Inference benchmarking** to evaluate deployment feasibility on edge infrastructure
 - **Computational efficiency analysis** using latency, throughput, model size, memory, and CPU metrics
 
-The computational evaluation supports the claim in Section 3.5 of the paper: LightGBM achieves a mean inference latency of **1.26 ms**, a model size of **1.015 MB**, a memory footprint of **2.85 MB**, and a transaction throughput of **169,072 TPS** — all within the thresholds required for efficient edge deployment.
+The classification evaluation shows that LightGBM achieves **F1-Score 0.8227**, **PR-AUC 0.8666**, and **ROC-AUC 0.9976** at its optimal threshold of 0.977 — the best performance among all three models. The computational evaluation supports the claim in Section 3.5 of the paper: LightGBM achieves a mean inference latency of **1.26 ms**, a model size of **0.6957 MB**, a memory footprint of **2.85 MB**, and a transaction throughput of **169,072 TPS** — all within the thresholds required for efficient edge deployment.
 
 ---
 
 ## Notes
 
-- The dataset file is excluded from the repository due to GitHub's file size limitation.
-- The trained model (`aml_best_model.pkl`) and scaler (`aml_scaler.pkl`) are included because their combined size is only 1.017 MB.
+- The dataset file (`SAML-D.csv`) is excluded from the repository due to GitHub's file size limitation. Place it in the project directory before running the notebook.
+- The trained model and supporting artifacts (`aml_best_model.pkl`, `aml_scaler.pkl`, `aml_encoder.pkl`, `aml_threshold.pkl`, etc.) are included because their combined size is under 2 MB.
 - The notebook may not always render correctly on GitHub if the output is large. Result figures are provided separately as PNG files.
-- CPU usage is reported as per-core normalized value. Raw psutil output on multi-core Windows systems may show values above 100% (cumulative across all cores).
+- CPU usage is reported as per-core normalized value. Raw `psutil` output on multi-core Windows systems may show values above 100% (cumulative across all cores).
+- Model size in `aml_model_comparison_results.csv` (0.6957 MB) refers to the LightGBM model file only. The value in `inference_metrics_updated.json` (1.015 MB) includes the scaler artifact.
