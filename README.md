@@ -175,8 +175,8 @@ All metrics are evaluated on the held-out test set using the threshold tuned on 
 ![Feature Importance](pencucian%20uang/pencucian%20uang/feature_importance_best_model.png)
 
 ---
-### SHAP Feature Importance per Class
-![SHAP Feature Importance Stacked](pencucian%20uang/pencucian%20uan/shap_dependence_Receiver_freq.png)
+### SHAP Dependence Plot — Receiver Frequency
+![SHAP Dependence Receiver Frequency](pencucian%20uang/pencucian%20uang/shap_dependence_Receiver_freq.png)
 
 ### SHAP Feature Importance per Class with Labels
 ![SHAP Feature Importance Class Label](pencucian%20uang/pencucian%20uang/shap_feature_importance_stacked_class_label.png)
